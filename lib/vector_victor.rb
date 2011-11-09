@@ -1,1 +1,1 @@
-require 'vector_victor/parser'
+require 'lib/vector_victor/parser'
