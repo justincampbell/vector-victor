@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'lib/vector_victor'
+
+options = {}
+
+opt_parser = OptionParser.new do |opt|
+  opt.banner = "Usage: vector-victor [OPTIONS] filename"
+  opt.separator  ""
+  opt.separator  "Options"
+
+  opt.on("-f","--from date","date to start search on") do |from|
+    options[:from] = from
+  end
+
+  opt.on("-t","--to","date to end search on") do |to|
+    options[:to] = to
+  end
+
+  opt.on("-v","--verbose","verbose output") do
+    options[:verbose] = true
+  end
+
+  opt.on("-q","--quiet","no output") do
+    options[:quiet] = true
+  end
+
+  opt.on("-h","--help","help") do
+    options[:help] = true
+  end
+end
+
+opt_parser.parse!
+
+if ARGV[0] or options[:help]
+  options[:filename] = ARGV[0]
+  VectorVictor::Parser.new(options).parse
+else
+  puts opt_parser
+end
