@@ -14,7 +14,7 @@ opt_parser = OptionParser.new do |opt|
     options[:from] = from
   end
 
-  opt.on("-t","--to","date to end search on") do |to|
+  opt.on("-t","--to date","date to end search on") do |to|
     options[:to] = to
   end
 
