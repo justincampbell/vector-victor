@@ -1,0 +1,1 @@
+require 'vector_victor/parser'
