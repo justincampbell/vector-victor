@@ -1,0 +1,2 @@
+rvm 1.8.7@vector_victor --create --install
+rvm_project_rvmrc_default=1
