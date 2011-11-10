@@ -4,12 +4,14 @@ module VectorVictor
     attr_accessor :filename
 
     def initialize(options)
+      @verbose = options[:verbose]
+
+      puts options.inspect if @verbose
+
       @filename = options[:filename]
 
       @from = Date.parse(options[:from]) if options[:from]
       @to   = Date.parse(options[:to])   if options[:to]
-
-      @verbose = options[:verbose]
     end
 
     def parse
@@ -32,19 +34,19 @@ module VectorVictor
         else
           results.push data
         end
-
-        if @verbose
-          puts "#{Time.at(data[:timestamp]).send(:to_date).to_s} #{data[:traffic]} #{data[:interest]}"
-        end
       end
 
       if results.any?
+        if @verbose
+          results.each { |data| puts "#{Time.at(data[:timestamp]).send(:to_date).to_s} #{data[:traffic]} #{data[:interest]} #{data[:checksum]}" }
+        end
+
         munged_results = self.class.munge(results)
 
         unless @quiet
           puts "#{@from or '?'} - #{@to or '?'}"
-          puts "#{munged_results[:traffic]} traffic"
-          puts "#{munged_results[:interest]} interest"
+          puts "#{munged_results[:traffic]} traffic, #{munged_results[:average][:traffic]}/day"
+          puts "#{munged_results[:interest]} interest, #{munged_results[:average][:interest]}/day"
           puts "#{munged_results[:ratio]}:1"
         end
 
@@ -71,10 +73,12 @@ module VectorVictor
     end
 
     def self.munge(results)
+      count    = 0
       traffic  = 0
       interest = 0
 
       results.each do |result|
+        count += 1
         traffic  += result[:traffic]
         interest += result[:interest]
       end
@@ -84,7 +88,11 @@ module VectorVictor
       {
         :traffic  => traffic,
         :interest => interest,
-        :ratio    => ratio
+        :ratio    => ratio,
+        :average  => {
+          :traffic  => traffic / count,
+          :interest => interest / count
+        }
       }
     end
 
